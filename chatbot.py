@@ -1,5 +1,7 @@
 import discord
 import asyncio
+import youtube_dl
+import re
 
 import token_settings
 
@@ -19,6 +21,25 @@ async def on_ready():
 @client.event
 async def on_message(message):
     if message.content.startswith("!music"):
-        await message.channel.send("검색하고 싶은 음악 제목을 입력해주세요!")
+        msg = message.content.split(" ")
+        #await message.channel.send("재생하고 싶은 음악의 youtube url을 입력해주세요!")
+        url = msg[1]
 
+        ydl_opts = {
+            'format':'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '320',
+
+            }],
+        }
+
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+        
+        #channel = message.author.voice.channel
+        #await channel.connect()
+      
+        
 client.run(Settings.token)
